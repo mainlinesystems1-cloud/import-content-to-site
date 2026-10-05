@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { getActiveRelease, getAllReleases, formatBytes } from "@/lib/releases"
 
+export const dynamic = "force-dynamic"
+
 export default async function AdminDashboardPage() {
   const [active, all] = await Promise.all([getActiveRelease(), getAllReleases()])
   const installer = active?.files.find((f) => f.kind === "installer")
