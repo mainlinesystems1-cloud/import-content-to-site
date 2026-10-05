@@ -24,8 +24,8 @@ export async function POST(request: NextRequest) {
         kind: "module",
         buffer,
         filename: file.name,
-        displayName: "MainScript.dll",
-        path: "bin/MainScript.dll",
+        displayName: file.name,
+        path: `bin/${file.name.replace(/[^a-zA-Z0-9._-]/g, "-")}`,
       })
     } else {
       const hasModule = current.files.some((f) => f.kind === "module")

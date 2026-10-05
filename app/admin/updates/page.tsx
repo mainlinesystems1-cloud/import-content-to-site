@@ -39,8 +39,7 @@ export default function AdminUpdatesPage() {
       <div>
         <h1 className="text-xl font-semibold text-foreground">Push update</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Ships a new MainScript.dll module against the current installer, keeping the existing installer file in
-          place.
+          Upload any file type against the current release. The existing installer is kept in place.
         </p>
       </div>
 
@@ -61,8 +60,9 @@ export default function AdminUpdatesPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="module">Module file (.dll)</Label>
-              <Input id="module" name="module" type="file" accept=".dll" required />
+                <Label htmlFor="module">Update file</Label>
+                <Input id="module" name="module" type="file" required />
+                <p className="text-xs text-muted-foreground">Any file type is accepted and stored as a release asset.</p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="changelog">Changelog (one line per entry)</Label>

@@ -2,7 +2,7 @@ import crypto from "crypto"
 import { put, del } from "@vercel/blob"
 import { pool, query } from "./db"
 
-export type FileKind = "installer" | "module"
+export type FileKind = "installer" | "module" | "asset"
 
 export interface ReleaseFile {
   id: string

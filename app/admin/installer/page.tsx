@@ -39,7 +39,7 @@ export default function AdminInstallerPage() {
       <div>
         <h1 className="text-xl font-semibold text-foreground">Publish installer</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Uploads a new MainScript.exe, verifies it by hash after upload, and makes the release live.
+          Upload any file type for this release. Executables and libraries are classified automatically, verified by hash, and made live together.
         </p>
       </div>
 
@@ -64,8 +64,11 @@ export default function AdminInstallerPage() {
               <Input id="channel" name="channel" placeholder="stable" defaultValue="stable" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="installer">Installer file (.exe)</Label>
-              <Input id="installer" name="installer" type="file" accept=".exe" required />
+                <Label htmlFor="files">Release files</Label>
+                <Input id="files" name="files" type="file" multiple required />
+                <p className="text-xs text-muted-foreground">
+                  Any file type is accepted. Include an .exe for the installer; .dll files and other files are stored as release assets.
+                </p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="changelog">Changelog (one line per entry)</Label>

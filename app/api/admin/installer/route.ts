@@ -8,24 +8,28 @@ export async function POST(request: NextRequest) {
     const supportedRobloxVersion = String(form.get("robloxBuild") ?? "").trim()
     const channel = String(form.get("channel") ?? "stable").trim()
     const changelogText = String(form.get("changelog") ?? "")
-    const file = form.get("installer") as File | null
-
+    const files = form.getAll("files").filter((value): value is File => value instanceof File && value.size > 0)
     const newFiles: Parameters<typeof publishRelease>[0]["newFiles"] = []
-    if (file && file.size > 0) {
-      const buffer = Buffer.from(await file.arrayBuffer())
+
+    for (const file of files) {
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-")
+      const lowerName = file.name.toLowerCase()
+      const kind = lowerName.endsWith(".exe") ? "installer" : lowerName.endsWith(".dll") ? "module" : "asset"
       newFiles.push({
-        kind: "installer",
-        buffer,
+        kind,
+        buffer: Buffer.from(await file.arrayBuffer()),
         filename: file.name,
-        displayName: "MainScript.exe",
-        path: "MainScript.exe",
+        displayName: file.name,
+        path: safeName,
       })
-    } else {
+    }
+
+    if (!newFiles.some((file) => file.kind === "installer")) {
       const current = await getActiveRelease()
-      const hasInstaller = current?.files.some((f) => f.kind === "installer")
+      const hasInstaller = current?.files.some((file) => file.kind === "installer")
       if (!hasInstaller) {
         return NextResponse.json(
-          { error: "An installer file is required for the first release" },
+          { error: "An .exe installer is required for the first release" },
           { status: 400 },
         )
       }
