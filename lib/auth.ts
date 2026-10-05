@@ -59,20 +59,30 @@ export async function isAuthenticated(): Promise<boolean> {
   return verifySessionToken(token)
 }
 
+export function isPasswordConfigured(): boolean {
+  return Boolean(process.env.ADMIN_PASSWORD)
+}
+
+// The v0 preview renders the app inside a cross-site iframe, where browsers
+// drop SameSite=Lax cookies. Development needs SameSite=None to stay logged in.
+const cookieOptions = {
+  httpOnly: true,
+  secure: true,
+  sameSite: process.env.NODE_ENV === "production" ? ("lax" as const) : ("none" as const),
+  path: "/",
+}
+
 export async function setSessionCookie() {
   const store = await cookies()
   store.set(SESSION_COOKIE, createSessionToken(), {
-    httpOnly: true,
-    secure: true,
-    sameSite: "lax",
-    path: "/",
+    ...cookieOptions,
     maxAge: SESSION_DURATION_MS / 1000,
   })
 }
 
 export async function clearSessionCookie() {
   const store = await cookies()
-  store.delete(SESSION_COOKIE)
+  store.set(SESSION_COOKIE, "", { ...cookieOptions, maxAge: 0 })
 }
 
 export const SESSION_COOKIE_NAME = SESSION_COOKIE
