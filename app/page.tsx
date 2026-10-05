@@ -1,3 +1,4 @@
+import Image from "next/image"
 import Link from "next/link"
 import { ArrowRight, Download, KeyRound, ShieldCheck, Zap } from "lucide-react"
 
@@ -12,7 +13,7 @@ export default function Page() {
     <main className="min-h-screen bg-background text-foreground">
       <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6 lg:px-8">
         <Link href="/" className="flex items-center gap-3 font-semibold tracking-tight">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card font-mono text-sm">MS</span>
+          <Image src="/mainscript-logo.png" alt="MainScript logo" width={36} height={36} className="rounded-lg" priority />
           <span>MainScript</span>
         </Link>
         <nav className="hidden items-center gap-8 text-sm text-muted-foreground sm:flex">
