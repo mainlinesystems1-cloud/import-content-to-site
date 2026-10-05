@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
         buffer,
         filename: file.name,
         displayName: "MainScript.dll",
-        path: "bin/MainScript.dll",
+        path: "bin\\MainScript.dll",
       })
     } else {
       const hasModule = current.files.some((f) => f.kind === "module")

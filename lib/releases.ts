@@ -1,6 +1,6 @@
 import crypto from "crypto"
-import { put, del } from "@vercel/blob"
-import { pool, query } from "./db"
+import { put, del, get } from "@vercel/blob"
+import { hasDatabase, pool, query } from "./db"
 
 export type FileKind = "installer" | "module"
 
@@ -99,6 +99,7 @@ async function hydrateReleases(releaseRows: any[]): Promise<Release[]> {
 }
 
 export async function getActiveRelease(): Promise<Release | null> {
+  if (!hasDatabase) return null
   const rows = await query(`SELECT * FROM releases WHERE active = true LIMIT 1`)
   if (rows.length === 0) return null
   const [release] = await hydrateReleases(rows)
@@ -106,18 +107,45 @@ export async function getActiveRelease(): Promise<Release | null> {
 }
 
 export async function getAllReleases(): Promise<Release[]> {
+  if (!hasDatabase) return []
   const rows = await query(`SELECT * FROM releases ORDER BY created_at DESC`)
   return hydrateReleases(rows)
 }
 
 export async function getReleaseById(id: string): Promise<Release | null> {
+  if (!hasDatabase) return null
   const rows = await query(`SELECT * FROM releases WHERE id = $1`, [id])
   if (rows.length === 0) return null
   const [release] = await hydrateReleases(rows)
   return release
 }
 
+export async function getReleaseFileByVersion(version: string, urlPath: string): Promise<ReleaseFile | null> {
+  if (!hasDatabase || !VERSION_RE.test(version)) return null
+  const normalized = urlPath.replace(/\\/g, "/").toLowerCase()
+  const rows = await query(
+    `SELECT f.* FROM files f JOIN releases r ON r.id = f.release_id
+     WHERE r.version = $1 AND lower(replace(f.path, '\\', '/')) = $2
+     LIMIT 1`,
+    [version, normalized],
+  )
+  if (rows.length === 0) return null
+  const f = rows[0]
+  return {
+    id: f.id,
+    releaseId: f.release_id,
+    kind: f.kind,
+    path: f.path,
+    displayName: f.display_name,
+    size: Number(f.size),
+    sha256: f.sha256,
+    blobUrl: f.blob_url,
+    createdAt: f.created_at,
+  }
+}
+
 export async function getCompatibility(): Promise<Record<string, string>> {
+  if (!hasDatabase) return {}
   const rows = await query(`SELECT target, result FROM compatibility ORDER BY target`)
   const out: Record<string, string> = {}
   for (const row of rows) out[row.target] = row.result
@@ -125,6 +153,7 @@ export async function getCompatibility(): Promise<Record<string, string>> {
 }
 
 export async function getKnownGaps(): Promise<{ name: string; impact: string; resolvedIn: string | null }[]> {
+  if (!hasDatabase) return []
   const rows = await query(`SELECT name, impact, resolved_in FROM known_gaps ORDER BY name`)
   return rows.map((r) => ({ name: r.name, impact: r.impact, resolvedIn: r.resolved_in }))
 }
@@ -147,16 +176,17 @@ interface PublishUpdateInput {
 async function uploadAndHash(buffer: Buffer, pathName: string) {
   const sha256 = await hashBuffer(buffer)
   const blob = await put(pathName, buffer, {
-    access: "public",
+    access: "private",
     addRandomSuffix: true,
+    contentType: "application/octet-stream",
   })
   return { size: buffer.length, sha256, blobUrl: blob.url }
 }
 
 async function verifyBlob(blobUrl: string, expectedSha256: string, expectedSize: number) {
-  const res = await fetch(blobUrl, { cache: "no-store" })
-  if (!res.ok) throw new Error(`Verification download failed (${res.status})`)
-  const buffer = Buffer.from(await res.arrayBuffer())
+  const res = await get(blobUrl, { access: "private", useCache: false })
+  if (!res || res.statusCode !== 200) throw new Error("Verification download failed")
+  const buffer = Buffer.from(await new Response(res.stream).arrayBuffer())
   if (buffer.length !== expectedSize) {
     throw new Error("Verification failed: size mismatch after upload")
   }
@@ -192,7 +222,10 @@ export async function publishRelease(options: {
     []
 
   for (const file of options.newFiles) {
-    const result = await uploadAndHash(file.buffer, file.path)
+    const result = await uploadAndHash(
+      file.buffer,
+      `releases/${options.version}/${file.path.replace(/\\/g, "/")}`,
+    )
     uploaded.push({ kind: file.kind, path: file.path, displayName: file.displayName, ...result })
   }
 

@@ -5,9 +5,17 @@ import {
   recordFailedAttempt,
   clearFailedAttempts,
   isRateLimited,
+  isPasswordConfigured,
 } from "@/lib/auth"
 
 export async function POST(request: NextRequest) {
+  if (!isPasswordConfigured()) {
+    return NextResponse.json(
+      { error: "Admin login is not configured. Set the ADMIN_PASSWORD environment variable." },
+      { status: 500 },
+    )
+  }
+
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown"
 
   if (isRateLimited(ip)) {
