@@ -10,9 +10,9 @@ const FEATURES = [
 ]
 
 const COMPATIBILITY = [
-  ["Windows", "Ready"],
-  ["Roblox", "Current"],
-  ["Key system", "None"],
+  ["Myriad", "99%"],
+  ["UNC", "96%"],
+  ["SUNC", "100%"],
 ]
 
 function Header() {
