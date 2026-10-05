@@ -1,43 +1,24 @@
 import Image from "next/image"
 import Link from "next/link"
-import { Download, MessageCircle, Video } from "lucide-react"
+import { Download, KeyRound, MessageCircle, RefreshCw, Video, Zap } from "lucide-react"
 
-export default function Page() {
-  return (
-    <main className="min-h-screen bg-[#090a0b] text-[#f1f1f3]">
-      <header className="border-b border-white/[0.07]">
-        <div className="mx-auto flex h-16 max-w-[1120px] items-center justify-between px-6">
-          <Link href="/" className="flex items-center gap-2.5 text-[15px] font-semibold tracking-tight">
-            <Image src="/mainscript-logo.png" alt="MainScript logo" width={28} height={28} className="object-contain" priority />
-            <span>MainScript</span>
-          </Link>
-          <nav className="hidden items-center gap-7 text-sm text-[#8d8d94] md:flex">
-            <Link href="#home" className="transition-colors hover:text-white">Home</Link>
-            <Link href="/download" className="transition-colors hover:text-white">Download</Link>
-            <Link href="/docs" className="transition-colors hover:text-white">Docs</Link>
-            <Link href="/legal" className="transition-colors hover:text-white">Legal</Link>
-          </nav>
-          <div className="flex items-center gap-4">
-            <Link href="https://discord.com" aria-label="Join the Discord" className="text-[#96969d] transition-colors hover:text-white"><MessageCircle className="h-[18px] w-[18px]" aria-hidden /></Link>
-            <Link href="https://youtube.com" aria-label="MainScript on YouTube" className="text-[#96969d] transition-colors hover:text-white"><Video className="h-[19px] w-[19px]" aria-hidden /></Link>
-            <Link href="/download" className="rounded-lg bg-[#f1f1f3] px-4 py-2 text-[13px] font-semibold text-[#111216] transition-colors hover:bg-white">Get MainScript</Link>
-          </div>
-        </div>
-      </header>
+const FEATURES = [
+  { icon: Download, title: "Completely free", body: "No paywalls, no premium tiers. Download and start executing." },
+  { icon: KeyRound, title: "Keyless", body: "No key systems, no ad links, no waiting. Open it and go." },
+  { icon: Zap, title: "Fast execution", body: "A lightweight native injector with a responsive, clean editor." },
+  { icon: RefreshCw, title: "Kept up to date", body: "Updated quickly after every Roblox release so you stay working." },
+]
 
-      <section id="home" className="relative flex min-h-[610px] items-center justify-center overflow-hidden border-b border-white/[0.07] px-6 text-center">
-        <div aria-hidden className="pointer-events-none absolute inset-0 opacity-45 [background-image:radial-gradient(circle_at_center,rgba(255,255,255,0.13)_0.8px,transparent_0.9px)] [background-size:22px_22px] [mask-image:radial-gradient(ellipse_at_center,black_12%,transparent_72%)]" />
-        <div className="relative flex -translate-y-2 flex-col items-center">
-          <Image src="/mainscript-logo.png" alt="" width={78} height={78} className="mb-8 object-contain" priority />
-          <h1 className="text-6xl font-bold tracking-[-0.055em] sm:text-[68px]">MainScript</h1>
-          <p className="mt-3 text-[24px] font-medium tracking-[-0.025em] text-[#c9d0d9]">Script execution, refined.</p>
-          <p className="mt-4 text-[15px] text-[#8e98a7]">A free and keyless Roblox executor for Windows.</p>
-          <div className="mt-11 flex flex-col gap-3 sm:flex-row">
-            <Link href="/download" className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-[#f1f1f3] px-6 text-sm font-semibold text-[#111216] transition-colors hover:bg-white"><Download className="h-4 w-4" aria-hidden />Download MainScript</Link>
-            <Link href="https://discord.com" className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-white/[0.12] px-6 text-sm font-semibold transition-colors hover:bg-white/[0.06]"><MessageCircle className="h-4 w-4" aria-hidden />Join the Discord</Link>
-          </div>
-        </div>
-      </section>
-    </main>
-  )
+const COMPATIBILITY = [
+  ["Windows", "Ready"],
+  ["Roblox", "Current"],
+  ["Key system", "None"],
+]
+
+function Header() {
+  return <header className="border-b border-white/[0.07]"><div className="mx-auto flex h-16 max-w-[1120px] items-center justify-between px-6"><Link href="/" className="flex items-center gap-2.5 text-[15px] font-semibold tracking-tight"><Image src="/mainscript-logo.png" alt="MainScript logo" width={28} height={28} className="object-contain" priority />MainScript</Link><nav className="hidden items-center gap-7 text-sm text-[#8d8d94] md:flex"><Link href="#home" className="hover:text-white">Home</Link><Link href="/download" className="hover:text-white">Download</Link><Link href="/docs" className="hover:text-white">Docs</Link><Link href="/legal" className="hover:text-white">Legal</Link></nav><div className="flex items-center gap-4"><Link href="https://discord.com" aria-label="Join the Discord" className="text-[#96969d] hover:text-white"><MessageCircle className="h-[18px] w-[18px]" aria-hidden /></Link><Link href="https://youtube.com" aria-label="MainScript on YouTube" className="text-[#96969d] hover:text-white"><Video className="h-[19px] w-[19px]" aria-hidden /></Link><Link href="/download" className="rounded-lg bg-[#f1f1f3] px-4 py-2 text-[13px] font-semibold text-[#111216] hover:bg-white">Get MainScript</Link></div></div></header>
+}
+
+export default function HomePage() {
+  return <div className="flex min-h-screen flex-col bg-[#090a0b] text-[#f1f1f3]"><Header /><main className="flex-1"><section id="home" className="relative overflow-hidden border-b border-white/[0.07]"><div aria-hidden className="pointer-events-none absolute inset-0 [background-image:radial-gradient(circle_at_center,rgba(255,255,255,0.07)_1px,transparent_1px)] [background-size:22px_22px] [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_75%)]" /><div className="relative mx-auto max-w-6xl px-4 py-24 sm:px-6 sm:py-32"><div className="flex flex-col items-center text-center"><Image src="/mainscript-logo.png" alt="" width={72} height={72} className="h-18 w-18" priority /><h1 className="mt-8 text-5xl font-bold tracking-tight sm:text-7xl">MainScript</h1><p className="mt-4 text-xl font-medium text-[#c9d0d9] sm:text-2xl">Script execution, refined.</p><p className="mt-4 max-w-md leading-relaxed text-[#8e98a7]">A free and keyless Roblox executor for Windows.</p><div className="mt-10 flex flex-col gap-3 sm:flex-row"><Link href="/download" className="inline-flex items-center justify-center gap-2 rounded-md bg-[#f1f1f3] px-6 py-3 text-sm font-semibold text-[#111216] hover:bg-white"><Download className="h-4 w-4" aria-hidden />Download MainScript</Link><a href="https://discord.gg/htv6hZAUTe" target="_blank" rel="noreferrer noopener" className="inline-flex items-center justify-center gap-2 rounded-md border border-white/[0.12] px-6 py-3 text-sm font-semibold hover:bg-white/[0.06]"><MessageCircle className="h-4 w-4" aria-hidden />Join the Discord</a></div></div></div></section><section className="border-b border-white/[0.07]"><div className="mx-auto grid max-w-6xl gap-px px-4 py-20 sm:grid-cols-2 sm:px-6 lg:grid-cols-4">{FEATURES.map(({ icon: Icon, title, body }) => <div key={title} className="flex flex-col gap-3 p-6"><div className="flex h-10 w-10 items-center justify-center rounded-md border border-white/[0.12] bg-white/[0.03]"><Icon className="h-5 w-5" aria-hidden /></div><h2 className="font-semibold">{title}</h2><p className="text-sm leading-relaxed text-[#8e98a7]">{body}</p></div>)}</div></section><section><div className="mx-auto max-w-6xl px-4 py-20 sm:px-6"><div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between"><div><p className="text-xs font-semibold uppercase tracking-wider text-[#8e98a7]">Compatibility</p><h2 className="mt-2 text-3xl font-bold tracking-tight">Tested where it counts</h2></div><Link href="/docs" className="text-sm text-[#8e98a7] hover:text-white">Read the docs →</Link></div><div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">{COMPATIBILITY.map(([target, result]) => <div key={target} className="rounded-lg border border-white/[0.12] bg-white/[0.03] p-6"><p className="font-mono text-3xl font-semibold">{result}</p><p className="mt-2 text-sm text-[#8e98a7]">{target}</p></div>)}</div></div></section></main><footer className="border-t border-white/[0.07] px-6 py-8 text-center text-sm text-[#8e98a7]"><p>© 2026 MainScript. Built for focused execution.</p></footer></div>
 }
