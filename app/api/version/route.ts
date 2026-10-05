@@ -1,35 +1,33 @@
-import release from "@/data/release.json"
+import { NextResponse } from "next/server"
+import { getActiveRelease } from "@/lib/releases"
 
-const VERSION_RE = /^\d+\.\d+\.\d+$/
-const ROBLOX_BUILD_RE = /^version-[0-9a-fA-F]+$/
+export const dynamic = "force-dynamic"
 
-if (!VERSION_RE.test(release.version)) {
-  throw new Error(`data/release.json: "version" must look like 1.2.4, got "${release.version}"`)
-}
-if (!ROBLOX_BUILD_RE.test(release.robloxVersion)) {
-  throw new Error(
-    `data/release.json: "robloxVersion" must look like version-02c37bc51a384b8f, got "${release.robloxVersion}"`,
-  )
-}
-
-export const dynamic = "force-static"
-
-const corsHeaders = {
+const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, OPTIONS",
+  "Cache-Control": "no-store",
 }
 
-export function GET() {
-  return Response.json(
-    {
-      version: release.version,
-      robloxVersion: release.robloxVersion,
-      changelog: release.changelog,
-    },
-    { headers: corsHeaders },
-  )
+export async function GET() {
+  try {
+    const release = await getActiveRelease()
+    if (!release) {
+      return NextResponse.json({ error: "No live release" }, { status: 404, headers: CORS_HEADERS })
+    }
+    return NextResponse.json(
+      {
+        version: release.version,
+        robloxVersion: release.supportedRobloxVersion,
+        changelog: release.changelog,
+      },
+      { headers: CORS_HEADERS },
+    )
+  } catch {
+    return NextResponse.json({ error: "Release data unavailable" }, { status: 503, headers: CORS_HEADERS })
+  }
 }
 
 export function OPTIONS() {
-  return new Response(null, { status: 204, headers: corsHeaders })
+  return new NextResponse(null, { status: 204, headers: CORS_HEADERS })
 }
